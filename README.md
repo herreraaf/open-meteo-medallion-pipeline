@@ -36,53 +36,71 @@ Open-Meteo API
 ```
 
 
----
+## Getting started
 
-## Quick start (Docker)
+You can run the pipeline with Docker (recommended) or directly with Python.
 
-Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+### Option A: Docker (recommended)
+
+
+**1. Clone the repository**
 
 ```bash
 git clone https://github.com/herreraaf/open-meteo-medallion-pipeline.git
 cd open-meteo-medallion-pipeline
+```
+
+**2. Build the image**
+
+```bash
 docker compose build
+```
+
+**3. Run the pipeline**
+
+```bash
 docker compose run --rm pipeline
 ```
 
-Output is written to `data/` on your machine:
+That's it. Results are written to the `data/` folder on your machine (see [Output](#output)). Dashboard is found in `data/report/`
 
-```
-data/bronze/forecast/ingest_date=2026-10-03/brisbane_3f9a1c2b7e4d5a60.json
-```
+### Option B: Python, without Docker
 
-Run it again: unchanged data is skipped, so reruns never create duplicates.
+**Requires:** Python 3.12+ and Git.
 
-### Commands
+**1. Clone the repository**
 
 ```bash
-docker compose run --rm pipeline                                   # full pipeline
-docker compose run --rm pipeline python -m pipeline.cli extract    # one step
-docker compose run --rm pipeline python -m pipeline.cli --help     # list commands
+git clone https://github.com/herreraaf/open-meteo-medallion-pipeline.git
+cd open-meteo-medallion-pipeline
 ```
 
----
+**2. Create and activate a virtual environment**
 
-## Running locally (without Docker)
-
-Requires Python 3.12+.
-
-```powershell
+```bash
 python -m venv .venv
-.venv\Scripts\Activate.ps1          # macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
+
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# macOS / Linux
+source .venv/bin/activate
+```
+
+**3. Install the dependencies and the project**
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install -e .
+```
+
+**4. Run the pipeline**
+
+```bash
 python -m pipeline.cli run
 ```
 
-Run commands from the project root: the config and data paths are relative to it.
-
----
-
+Always run commands from the project root: the config and data paths are relative to it.
 ## Configuration
 
 The pipeline's scope is defined in [`config/locations.yaml`](config/locations.yaml), not in code:
