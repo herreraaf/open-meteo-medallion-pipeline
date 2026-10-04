@@ -46,7 +46,7 @@ def content_hash(body):
 	stable = {k: v for k,v in body.items() if k != "generationtime_ms"}
 	return hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest()[:16]
 
-def save_bronze(location_id, params, body, fetched_at, data_dir="data"):
+def save_bronze(location_id, params, body, fetched_at, data_dir="data", run_id=None):
 	folder = Path(data_dir) / "bronze" / "forecast" / f"ingest_date={fetched_at:%Y-%m-%d}"
 	path = folder / f"{location_id}_{content_hash(body)}.json"
 
@@ -55,6 +55,7 @@ def save_bronze(location_id, params, body, fetched_at, data_dir="data"):
 
 	record = {
 		"_meta": { 
+			"run_id": run_id,
 			"source": "forecast",
 			"location_id": location_id,
 			"url": FORECAST_URL,
@@ -67,26 +68,27 @@ def save_bronze(location_id, params, body, fetched_at, data_dir="data"):
 	path.write_text(json.dumps(record, indent=2), encoding="utf-8")
 	return path
 
-def run(cfg):
-    """Extract the forecast for all locations into Bronze. Returns the number of failures."""
-    failures = 0
+def run(cfg, run_id=None):
+    """Extract the forecast for all locations into Bronze. Returns counts per outcome."""
+    stats = {"saved": 0, "unchanged": 0, "failed": 0}
 
     for location in cfg["locations"]:
         try:
             params, body = fetch_forecast(location, cfg["variables"])
         except httpx.HTTPError as exc:
             log.error("forecast/%s failed: %s", location["id"], exc)
-            failures += 1
+            stats["failed"] += 1
             continue
 
-        path = save_bronze(location["id"], params, body, datetime.now(timezone.utc))
+        path = save_bronze(location["id"], params, body, datetime.now(timezone.utc), run_id=run_id)
         if path:
+            stats["saved"] += 1
             log.info("forecast/%s saved %s", location["id"], path)
         else:
+            stats["unchanged"] += 1
             log.info("forecast/%s unchanged, skipped", location["id"])
 
-    log.info("extract finished: %d failure(s)", failures)
-    return failures
+    return stats
 
 
 if __name__ == "__main__":
