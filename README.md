@@ -38,9 +38,9 @@ Open-Meteo API
 
 ## Getting started
 
-You can run the pipeline with Docker (recommended) or directly with Python.
+You can run the pipeline with Docker.
 
-### Option A: Docker (recommended)
+### Docker
 
 
 **1. Clone the repository**
@@ -69,43 +69,6 @@ docker compose run --rm pipeline python -m pipeline.cli report    # regenerate t
 
 That's it. Results are written to the `data/` folder on your machine. Dashboard is found in `data/report/`
 
-### Option B: Python, without Docker
-
-**Requires:** Python 3.12+ and Git.
-
-**1. Clone the repository**
-
-```bash
-git clone https://github.com/herreraaf/open-meteo-medallion-pipeline.git
-cd open-meteo-medallion-pipeline
-```
-
-**2. Create and activate a virtual environment**
-
-```bash
-python -m venv .venv
-
-# Windows (PowerShell)
-.venv\Scripts\Activate.ps1
-
-# macOS / Linux
-source .venv/bin/activate
-```
-
-**3. Install the dependencies and the project**
-
-```bash
-python -m pip install -r requirements.txt
-python -m pip install -e .
-```
-
-**4. Run the pipeline**
-
-```bash
-python -m pipeline.cli run
-```
-
-Always run commands from the project root: the config and data paths are relative to it.
 ## Configuration
 
 The pipeline's scope is defined in [`config/locations.yaml`](config/locations.yaml), not in code:
