@@ -67,7 +67,7 @@ docker compose run --rm pipeline python -m pipeline.cli gold      # rebuild gold
 docker compose run --rm pipeline python -m pipeline.cli report    # regenerate the dashboard
 ```
 
-That's it. Results are written to the `data/` folder on your machine (see [Output](#output)). Dashboard is found in `data/report/`
+That's it. Results are written to the `data/` folder on your machine. Dashboard is found in `data/report/`
 
 ### Option B: Python, without Docker
 
