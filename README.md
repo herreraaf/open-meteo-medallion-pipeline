@@ -176,7 +176,7 @@ content hashing and Bronze idempotency.
 - [ ] Define the analytical use case for the Gold layer
 - [ ] Silver: flattened, typed, deduplicated Parquet tables with data quality checks
 - [ ] Gold: aggregated tables for the chosen use case
-- [ ] Run tracking (audit log per pipeline run)
+- [x] Run tracking (audit log per pipeline run)
 - [ ] CI with GitHub Actions
 
 ---
