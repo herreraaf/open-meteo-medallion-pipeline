@@ -1,0 +1,35 @@
+variables:
+  - temperature_2m
+  - precipitation
+  - wind_speed_10m
+
+locations:
+  - id: brisbane
+    name: Brisbane
+    latitude: -27.47
+    longitude: 153.03
+    timezone: Australia/Brisbane
+
+  - id: sydney
+    name: Sydney
+    latitude: -33.87
+    longitude: 151.21
+    timezone: Australia/Sydney
+
+  - id: melbourne
+    name: Melbourne
+    latitude: -37.81
+    longitude: 144.96
+    timezone: Australia/Melbourne
+
+  - id: perth
+    name: Perth
+    latitude: -31.95
+    longitude: 115.86
+    timezone: Australia/Perth
+
+  - id: gold coast
+    name: Gold Coast
+    latitude: -28.00
+    longitude: 153.43
+    timezone: Australia/Brisbane
