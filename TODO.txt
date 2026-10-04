@@ -1,0 +1,18 @@
+4. Tests that match the current code. The earlier test file targets code that no longer exists. You need a few tests for the logic you have: the hash ignores generationtime_ms, a rerun doesn't duplicate files, and build_requests produces the right parameters and dates.
+
+
+
+6. Logging instead of print. Python's logging adds timestamps and levels (INFO, ERROR), and output can go to a file. It's a small change.
+
+7. Run tracking (an audit log). This is a classic data engineering element you don't have yet. Each pipeline run records a run_id, start and end time, status, and counts (files fetched, skipped, failed; rows written per layer). It can be a small table in DuckDB or a JSON-lines file in data/_runs/. It answers "when did the pipeline last succeed, and what did it do?", which every production pipeline needs. Bronze _meta can also carry the run_id, linking each file to the run that produced it.
+
+8. Exit codes. The pipeline should exit with a non-zero code when something fails. Then Docker, a scheduler or CI can tell success from failure without reading the output.
+
+9. Data dictionary. A short doc describing each table, its grain, and its columns with units. The Silver design from my last message is most of it already.
+
+10. Decision log. A decisions.md with short entries like "why content hashes," "why UTC," "why no cache," "why validation happens in Silver, not Bronze." You've already made and discussed most of these decisions in this conversation; they just need writing down.
+
+11. Add ## AI usage AI tools were used throughout this project for design discussions, code drafting and review.
+Material conversations are documented in [`docs/ai_evidence/`](docs/ai_evidence/).
+
+12. double check readme.md

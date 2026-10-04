@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT ["python", "-m", "pipeline.extract"]
+CMD ["python", "-m", "pipeline.cli", "run"]

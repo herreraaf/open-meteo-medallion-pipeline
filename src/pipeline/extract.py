@@ -4,8 +4,10 @@ from pathlib import Path
 import hashlib
 import httpx
 import yaml
-from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential, before_sleep_log
+import logging
 
+log = logging.getLogger(__name__)
 
 # Make sure all required weather variables are listed here
 # The order of variables in hourly or daily is important to assign them correctly below
@@ -25,6 +27,7 @@ def is_temporary_error(exc):
 		retry=retry_if_exception(is_temporary_error),
 		stop=stop_after_attempt(4),
 		wait=wait_exponential(min=1, max=20),
+		before_sleep=before_sleep_log(log, logging.WARNING),
 		reraise=True,
 )
 
@@ -64,26 +67,27 @@ def save_bronze(location_id, params, body, fetched_at, data_dir="data"):
 	path.write_text(json.dumps(record, indent=2), encoding="utf-8")
 	return path
 
-def main():
-    cfg = load_config()
+def run(cfg):
+    """Extract the forecast for all locations into Bronze. Returns the number of failures."""
     failures = 0
 
     for location in cfg["locations"]:
         try:
             params, body = fetch_forecast(location, cfg["variables"])
         except httpx.HTTPError as exc:
-            print(f"{location['id']}: FAILED ({exc})")
+            log.error("forecast/%s failed: %s", location["id"], exc)
             failures += 1
-            continue  # one city failing shouldn't stop the others
+            continue
 
         path = save_bronze(location["id"], params, body, datetime.now(timezone.utc))
         if path:
-            print(f"{location['id']}: saved {path}")
+            log.info("forecast/%s saved %s", location["id"], path)
         else:
-            print(f"{location['id']}: unchanged, skipped")
+            log.info("forecast/%s unchanged, skipped", location["id"])
 
-    print(f"Done with {failures} failure(s).")
+    log.info("extract finished: %d failure(s)", failures)
+    return failures
 
 
-if __name__=="__main__":
-	main()
+if __name__ == "__main__":
+    run(load_config())
