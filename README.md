@@ -171,12 +171,12 @@ content hashing and Bronze idempotency.
 
 ## Roadmap
 
-- [x] Bronze: forecast ingestion with retries, idempotency and atomic writes
-- [x] Single CLI entry point, Docker setup
 - [ ] Define the analytical use case for the Gold layer
-- [ ] Silver: flattened, typed, deduplicated Parquet tables with data quality checks
-- [ ] Gold: aggregated tables for the chosen use case
+- [x] Single CLI entry point, Docker setup
 - [x] Run tracking (audit log per pipeline run)
+- [x] Bronze: forecast ingestion with retries, idempotency and atomic writes
+- [x] Silver: flattened, typed, deduplicated Parquet tables with data quality checks
+- [ ] Gold: aggregated tables for the chosen use case
 - [ ] CI with GitHub Actions
 
 ---
