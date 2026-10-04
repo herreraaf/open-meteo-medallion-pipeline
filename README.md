@@ -60,6 +60,13 @@ docker compose build
 
 ```bash
 docker compose run --rm pipeline
+
+docker compose run --rm pipeline python -m pipeline.cli extract   # fetch new data from the API
+docker compose run --rm pipeline python -m pipeline.cli silver    # rebuild silver from bronze
+docker compose run --rm pipeline python -m pipeline.cli gold      # rebuild gold from silver
+docker compose run --rm pipeline python -m pipeline.cli report    # regenerate the dashboard
+```
+
 ```
 
 That's it. Results are written to the `data/` folder on your machine (see [Output](#output)). Dashboard is found in `data/report/`
