@@ -8,6 +8,8 @@ clean, analysis-ready datasets queryable with SQL.
 > **Status:** Bronze ingestion is implemented and tested. Silver and Gold layers are in progress
 > (see [Roadmap](#roadmap)).
 
+![Forecast dashboard: map of cities colored by hourly temperature, with daily charts](docs/images/dashboard.png)
+
 ---
 
 ## Architecture
@@ -47,8 +49,8 @@ earlier versions of a forecast.
 Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPO.git
-cd YOUR-REPO
+git clone https://github.com/herreraaf/open-meteo-medallion-pipeline.git
+cd open-meteo-medallion-pipeline
 docker compose build
 docker compose run --rm pipeline
 ```
