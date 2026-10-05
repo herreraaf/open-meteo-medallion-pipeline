@@ -6,7 +6,7 @@ configurable set of locations, stores the raw responses, and is designed to tran
 clean, analysis-ready datasets queryable with SQL.
 
 <img src="docs/images/dashboard.png" alt="Forecast dashboard" width="700">
-![Forecast dashboard: map of cities colored by hourly temperature, with daily charts](docs/images/dashboard.png)
+Forecast dashboard: map of cities colored by hourly temperature, with daily charts.
 
 ---
 
@@ -20,15 +20,15 @@ Open-Meteo API
 │   Bronze    │  Raw API responses as JSON, exactly as received, plus request metadata.
 │             │  Append-only, never modified. Partitioned by source and ingest date.
 └─────────────┘
-      │  (planned) clean, flatten, validate, deduplicate
+      │          clean, flatten, validate, deduplicate
       ▼
 ┌─────────────┐
-│   Silver    │  Typed, UTC-normalized Parquet tables with a defined grain.
+│   Silver    │  Typed, UTC-normalized Parquet tables.
 └─────────────┘
-      │  (planned) aggregate
+      │          aggregate
       ▼
 ┌─────────────┐
-│    Gold     │  Aggregated, analysis-ready tables (use case to be defined).
+│    Gold     │  Aggregated, analysis-ready tables.
 └─────────────┘
       │
       ▼
@@ -164,8 +164,6 @@ maps onto object storage with Delta Lake or Iceberg and Spark.
 pytest -v
 ```
 
-Tests run without network access and write only to temporary folders. They currently cover
-content hashing and Bronze idempotency.
 
 ---
 
