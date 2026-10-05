@@ -7,7 +7,7 @@ clean, analysis-ready datasets queryable with SQL.
 
 > **Status:** Bronze ingestion is implemented and tested. Silver and Gold layers are in progress
 > (see [Roadmap](#roadmap)).
-
+<img src="docs/images/dashboard.png" alt="Forecast dashboard" width="100">
 ![Forecast dashboard: map of cities colored by hourly temperature, with daily charts](docs/images/dashboard.png)
 
 ---
