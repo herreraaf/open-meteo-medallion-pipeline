@@ -1,3 +1,0 @@
-https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&timezone=Australia%2FSydney&hourly=&daily=apparent_temperature_max
-
-Validation tells you the data is acceptable; atomic rename tells you when it becomes Bronze

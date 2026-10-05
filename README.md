@@ -5,7 +5,7 @@ using a **medallion architecture** (Bronze → Silver → Gold). It ingests weat
 configurable set of locations, stores the raw responses, and is designed to transform them into
 clean, analysis-ready datasets queryable with SQL.
 
-<img src="docs/images/dashboard.png" alt="Forecast dashboard" width="600">
+<img src="docs/images/dashboard.png" alt="Forecast dashboard" width="700">
 ![Forecast dashboard: map of cities colored by hourly temperature, with daily charts](docs/images/dashboard.png)
 
 ---
@@ -35,10 +35,6 @@ Open-Meteo API
    DuckDB / SQL
 ```
 
-**Why keep every layer on disk?** Each layer can be rebuilt from the one before it. If a
-transformation has a bug, it can be fixed and Silver and Gold regenerated from Bronze, without
-calling the API again. Bronze also preserves data the API will never return again, such as
-earlier versions of a forecast.
 
 ---
 
@@ -68,9 +64,6 @@ docker compose run --rm pipeline                                   # full pipeli
 docker compose run --rm pipeline python -m pipeline.cli extract    # one step
 docker compose run --rm pipeline python -m pipeline.cli --help     # list commands
 ```
-
-The pipeline exits with code `0` on success and `1` if any step fails, so it can be used by
-schedulers or CI.
 
 ---
 
@@ -116,13 +109,6 @@ changed (forecasts are updated several times a day), the new version is saved al
 one, so Bronze keeps a full history of what the API returned over time. The response field
 `generationtime_ms` changes on every call, so it is excluded from the hash.
 
-**Atomic writes.** Files are written to a temporary `.tmp` file and then renamed. A crash
-mid-write can never leave a partial `.json` file in Bronze.
-
-**Raw means raw.** Bronze stores the API response untouched, with request metadata (URL,
-parameters, fetch time) kept in a separate `_meta` block. Structural validation happens in the
-Bronze → Silver step, so problematic responses are kept as evidence rather than discarded.
-
 **Retries for temporary errors only.** Timeouts, connection errors, rate limits (429) and server
 errors (5xx) are retried with exponential backoff. Other client errors fail immediately, since
 retrying a bad request cannot succeed. One failing location does not stop the others.
@@ -130,8 +116,6 @@ retrying a bad request cannot succeed. One failing location does not stop the ot
 **UTC everywhere.** All data is requested in UTC so every location shares one clock. Conversion
 to local time is left to the presentation layer.
 
-**No HTTP cache.** Open-Meteo's examples use a response cache, but in a pipeline a cache can
-silently return stale data. Bronze already serves as the persistent record of every response.
 
 **Right-sized technology.** The data volume is small (a few thousand rows per run), so local
 files, Parquet and DuckDB are the appropriate tools. At larger scale, the same layered design
@@ -171,13 +155,12 @@ content hashing and Bronze idempotency.
 
 ## Roadmap
 
-- [] Define the analytical use case for the Gold layer
+- [x] Define the analytical use case for the Gold layer
 - [x] Single CLI entry point, Docker setup
 - [x] Run tracking (audit log per pipeline run)
 - [x] Bronze: forecast ingestion with retries, idempotency and atomic writes
 - [x] Silver: flattened, typed, deduplicated Parquet tables with data quality checks
 - [x] Gold: aggregated tables for the chosen use case
-- [ ] CI with GitHub Actions
 
 ---
 
@@ -185,3 +168,36 @@ content hashing and Bronze idempotency.
 
 AI tools were used throughout this project for design discussions, code drafting and review.
 Material conversations are documented in [`docs/ai_evidence/`](docs/ai_evidence/).
+
+## Known limitations and future improvements
+
+### Data and pipeline
+
+- **Scheduling.** The pipeline currently runs on demand. A daily schedule (cron, Windows Task
+  Scheduler, or an orchestrator such as  Airflow) would collect forecast versions
+  automatically.
+- **Local-day aggregation.** Daily summaries use UTC days. Using each location's timezone would
+  make "daily" match local calendar days.
+- **Incremental processing.** Silver and Gold are fully rebuilt on every run, which is simple and
+  idempotent at the current volume. At larger scale, only new Bronze files would be processed.
+- **Wider coverage.** Expanding to world capitals is a configuration change; at that scale,
+  batching several locations per API request would reduce the number of calls.
+- **Runtime data quality checks.** Gold reports hourly completeness but does not enforce it.
+  Next: explicit checks for completeness, uniqueness, value ranges and freshness on every run,
+  with a clear policy for which failures stop the pipeline and which only warn.
+- **Quarantine.** Rejected Bronze files are logged and counted; moving them to a quarantine
+  folder with the rejection reason would make investigation easier.
+
+### Testing and CI
+
+- **More coverage:** Bronze hashing and retry rules, Silver grain and schema, rejection of
+  malformed files, and a smoke test of the dashboard.
+- **Live API contract test,** skipped by default, to detect changes in Open-Meteo's responses.
+- **Continuous integration:** GitHub Actions running the tests and a linter (e.g. `ruff`) on
+  every push.
+
+### Scaling path
+
+At much larger volumes, the same layered design maps onto cloud object storage, a table format
+such as Delta Lake or Iceberg on top of Parquet, Spark or Databricks for processing, and an
+orchestrator for scheduling and retries.
