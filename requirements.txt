@@ -2,10 +2,11 @@ openmeteo-requests
 requests-cache
 retry-requests 
 numpy
-pandas
 tenacity==9.0.0
 PyYAML==6.0.2
 pydantic==2.9.2
 httpx==0.27.2
 pyarrow==17.0.0
 duckdb==1.1.3
+plotly==5.24.1
+pandas==2.2.3
