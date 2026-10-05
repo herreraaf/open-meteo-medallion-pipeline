@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pipeline import extract, bronze_to_silver
+from pipeline import extract, bronze_to_silver, silver_to_gold
 
 log = logging.getLogger("pipeline")
 CONFIG_PATH = "config/locations.yaml"
@@ -20,12 +20,14 @@ RUNS_FILE = Path("data/_runs/runs.jsonl")
 STEPS = {
     "extract": extract.run,
     "silver": bronze_to_silver.run,
+    "gold": silver_to_gold.run,
 }
 
 # What each step does (text for --help)
 STEP_DESCRIPTIONS = {
     "extract": "fetch data from Open-Meteo into bronze",
-    "silver": "flatten bronze JSON into typed Parquet (Silver)"
+    "silver": "flatten bronze JSON into typed Parquet (Silver)",
+    "gold": "build dashboard tables from silver (gold)"
 }
 
 #-------logging---------------------------------------------------------------------------------------#
